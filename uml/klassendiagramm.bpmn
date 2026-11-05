@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_Klassendiagramm" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.31.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.22.0">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:documentation>UML-Klassendiagramm der Punch-Clock-Applikation, abgebildet in BPMN: Lanes = Packages, Tasks = Klassen/Interfaces, gerichtete Assoziationen = Beziehungen.</bpmn:documentation>
+    <bpmn:participant id="Pool_Klassen" name="Punch Clock – Klassendiagramm (Package ch.zli.m223)" processRef="Process_Klassen" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Klassen" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Process_Klassen">
+      <bpmn:lane id="Lane_controller" name="ch.zli.m223.controller">
+        <bpmn:flowNodeRef>Class_EntryController</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_service" name="ch.zli.m223.service">
+        <bpmn:flowNodeRef>Class_EntryService</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_repository" name="ch.zli.m223.repository">
+        <bpmn:flowNodeRef>Class_EntryRepository</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Class_PanacheRepository</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_model" name="ch.zli.m223.model">
+        <bpmn:flowNodeRef>Class_Entry</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:task id="Class_EntryController" name="«@Path(&quot;/entries&quot;)»&#10;EntryController&#10;────────────&#10;- entryService : EntryService&#10;────────────&#10;+ index() : List&lt;Entry&gt;&#10;+ create(entry : Entry) : Entry" />
+    <bpmn:task id="Class_EntryService" name="«@ApplicationScoped»&#10;EntryService&#10;────────────&#10;- entryRepository : EntryRepository&#10;────────────&#10;+ createEntry(entry : Entry) : Entry&#10;+ findAll() : List&lt;Entry&gt;" />
+    <bpmn:task id="Class_EntryRepository" name="«@ApplicationScoped»&#10;EntryRepository&#10;────────────&#10;(erbt persist, listAll, findById, delete, … von PanacheRepository)" />
+    <bpmn:task id="Class_PanacheRepository" name="«interface»&#10;PanacheRepository&lt;Entity&gt;&#10;(io.quarkus.hibernate.orm.panache)&#10;────────────&#10;+ persist(entity : Entity) : void&#10;+ listAll() : List&lt;Entity&gt;&#10;+ findById(id : Long) : Entity" />
+    <bpmn:task id="Class_Entry" name="«@Entity»&#10;Entry&#10;────────────&#10;- id : Long  {@Id, IDENTITY}&#10;- checkIn : LocalDateTime  {nullable=false}&#10;- checkOut : LocalDateTime  {nullable=false}&#10;────────────&#10;+ getId() / setId(id : Long)&#10;+ getCheckIn() / setCheckIn(LocalDateTime)&#10;+ getCheckOut() / setCheckOut(LocalDateTime)" />
+    <bpmn:association id="Rel_Controller_Service" associationDirection="One" sourceRef="Class_EntryController" targetRef="Class_EntryService" />
+    <bpmn:association id="Rel_Service_Repository" associationDirection="One" sourceRef="Class_EntryService" targetRef="Class_EntryRepository" />
+    <bpmn:association id="Rel_Repo_Panache" associationDirection="One" sourceRef="Class_EntryRepository" targetRef="Class_PanacheRepository" />
+    <bpmn:association id="Rel_Panache_Entry" associationDirection="One" sourceRef="Class_PanacheRepository" targetRef="Class_Entry" />
+    <bpmn:association id="Rel_Service_Entry" associationDirection="One" sourceRef="Class_EntryService" targetRef="Class_Entry" />
+    <bpmn:association id="Rel_Controller_Entry" associationDirection="One" sourceRef="Class_EntryController" targetRef="Class_Entry" />
+    <bpmn:textAnnotation id="Note_C_S">
+      <bpmn:text>Assoziation 1 → 1
+@Inject entryService</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_S_R">
+      <bpmn:text>Assoziation 1 → 1
+@Inject entryRepository</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_R_P">
+      <bpmn:text>«realize» implements
+PanacheRepository&lt;Entry&gt;</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_P_E">
+      <bpmn:text>Typparameter
+Entity = Entry</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_Dep">
+      <bpmn:text>«use» Controller und Service verwenden
+Entry als Parameter-/Rückgabetyp
+(Pfeile rechts)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_Legende">
+      <bpmn:text>Legende:
+Task = Klasse/Interface
+(Stereotyp, Name, Attribute, Methoden)
+Pfeil = gerichtete Beziehung
+Lane = Package</bpmn:text>
+    </bpmn:textAnnotation>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Pool_Klassen_di" bpmnElement="Pool_Klassen" isHorizontal="true">
+        <dc:Bounds x="160" y="60" width="1200" height="1040" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_controller_di" bpmnElement="Lane_controller" isHorizontal="true">
+        <dc:Bounds x="190" y="60" width="1170" height="260" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_service_di" bpmnElement="Lane_service" isHorizontal="true">
+        <dc:Bounds x="190" y="320" width="1170" height="260" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_repository_di" bpmnElement="Lane_repository" isHorizontal="true">
+        <dc:Bounds x="190" y="580" width="1170" height="260" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_model_di" bpmnElement="Lane_model" isHorizontal="true">
+        <dc:Bounds x="190" y="840" width="1170" height="260" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Class_EntryController_di" bpmnElement="Class_EntryController">
+        <dc:Bounds x="260" y="90" width="280" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Class_EntryService_di" bpmnElement="Class_EntryService">
+        <dc:Bounds x="260" y="350" width="280" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Class_EntryRepository_di" bpmnElement="Class_EntryRepository">
+        <dc:Bounds x="260" y="610" width="280" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Class_PanacheRepository_di" bpmnElement="Class_PanacheRepository">
+        <dc:Bounds x="760" y="610" width="300" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Class_Entry_di" bpmnElement="Class_Entry">
+        <dc:Bounds x="730" y="870" width="360" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_C_S_di" bpmnElement="Note_C_S">
+        <dc:Bounds x="410" y="270" width="180" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_S_R_di" bpmnElement="Note_S_R">
+        <dc:Bounds x="410" y="530" width="180" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_R_P_di" bpmnElement="Note_R_P">
+        <dc:Bounds x="565" y="630" width="180" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_P_E_di" bpmnElement="Note_P_E">
+        <dc:Bounds x="925" y="795" width="120" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_Dep_di" bpmnElement="Note_Dep">
+        <dc:Bounds x="1230" y="380" width="120" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_Legende_di" bpmnElement="Note_Legende">
+        <dc:Bounds x="260" y="880" width="260" height="90" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Rel_Controller_Service_di" bpmnElement="Rel_Controller_Service">
+        <di:waypoint x="400" y="250" />
+        <di:waypoint x="400" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Rel_Service_Repository_di" bpmnElement="Rel_Service_Repository">
+        <di:waypoint x="400" y="510" />
+        <di:waypoint x="400" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Rel_Repo_Panache_di" bpmnElement="Rel_Repo_Panache">
+        <di:waypoint x="540" y="690" />
+        <di:waypoint x="760" y="690" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Rel_Panache_Entry_di" bpmnElement="Rel_Panache_Entry">
+        <di:waypoint x="910" y="770" />
+        <di:waypoint x="910" y="870" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Rel_Service_Entry_di" bpmnElement="Rel_Service_Entry">
+        <di:waypoint x="540" y="430" />
+        <di:waypoint x="1180" y="430" />
+        <di:waypoint x="1180" y="940" />
+        <di:waypoint x="1090" y="940" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Rel_Controller_Entry_di" bpmnElement="Rel_Controller_Entry">
+        <di:waypoint x="540" y="170" />
+        <di:waypoint x="1220" y="170" />
+        <di:waypoint x="1220" y="1000" />
+        <di:waypoint x="1090" y="1000" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

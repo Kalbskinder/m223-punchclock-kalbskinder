@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_Sequenz" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.22.0">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:documentation>UML-Sequenzdiagramm für den Anwendungsfall «Zeiteintrag erfassen» (UC2), abgebildet in BPMN: Jeder Pool ist eine Lebenslinie vom Browser bis zur Datenbank, die Nachrichtenflüsse sind die Aufrufe und Antworten.</bpmn:documentation>
+    <bpmn:participant id="Pool_User" name="Mitarbeiter/in" processRef="Process_User" />
+    <bpmn:participant id="Pool_Browser" name="Browser (index.html / script.js)" processRef="Process_Browser" />
+    <bpmn:participant id="Pool_Controller" name="EntryController" processRef="Process_Controller" />
+    <bpmn:participant id="Pool_Service" name="EntryService" processRef="Process_Service" />
+    <bpmn:participant id="Pool_DB" name="PostgreSQL" processRef="Process_DB" />
+    <bpmn:messageFlow id="M1" name="Send form" sourceRef="U_Submit" targetRef="B_Start" />
+    <bpmn:messageFlow id="M2" name="HTTP POST /entries&#10;{checkIn, checkOut}" sourceRef="B_Fetch" targetRef="C_Create" />
+    <bpmn:messageFlow id="M3" name="createEntry(entry)" sourceRef="C_Create" targetRef="S_Create" />
+    <bpmn:messageFlow id="M8" name="return entry" sourceRef="S_Return" targetRef="C_Return" />
+    <bpmn:messageFlow id="M9" name="HTTP 200&#10;{id, checkIn, checkOut}" sourceRef="C_Return" targetRef="B_Render" />
+    <bpmn:messageFlow id="M10" name="Tabelle neu gerendert" sourceRef="B_Render" targetRef="U_See" />
+    <bpmn:messageFlow id="Flow_1dqp8pg" sourceRef="S_Create" targetRef="DB_Insert" />
+    <bpmn:messageFlow id="Flow_1ntt8xt" sourceRef="DB_Insert" targetRef="S_Return" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_User" isExecutable="false">
+    <bpmn:startEvent id="U_Start" name="Opens page">
+      <bpmn:outgoing>U_Flow_0</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="U_Submit" name="Check-in/Check-out and click «Save»">
+      <bpmn:incoming>U_Flow_0</bpmn:incoming>
+      <bpmn:outgoing>U_Flow_1</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="U_See" name="New Entry visable">
+      <bpmn:incoming>U_Flow_1</bpmn:incoming>
+      <bpmn:outgoing>U_Flow_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="U_End" name="New entry added">
+      <bpmn:incoming>U_Flow_2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="U_Flow_0" sourceRef="U_Start" targetRef="U_Submit" />
+    <bpmn:sequenceFlow id="U_Flow_1" sourceRef="U_Submit" targetRef="U_See" />
+    <bpmn:sequenceFlow id="U_Flow_2" sourceRef="U_See" targetRef="U_End" />
+  </bpmn:process>
+  <bpmn:process id="Process_Browser" isExecutable="false">
+    <bpmn:startEvent id="B_Start" name="">
+      <bpmn:outgoing>B_Flow_0</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="B_Start_Msg" />
+    </bpmn:startEvent>
+    <bpmn:task id="B_Render" name="parse API result and display">
+      <bpmn:incoming>B_Flow_2</bpmn:incoming>
+      <bpmn:outgoing>B_Flow_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="B_End" name="">
+      <bpmn:incoming>B_Flow_3</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="B_Flow_0" sourceRef="B_Start" targetRef="B_Fetch" />
+    <bpmn:sequenceFlow id="B_Flow_2" sourceRef="B_Fetch" targetRef="B_Render" />
+    <bpmn:sequenceFlow id="B_Flow_3" sourceRef="B_Render" targetRef="B_End" />
+    <bpmn:task id="B_Fetch" name="Send API request to backend">
+      <bpmn:incoming>B_Flow_0</bpmn:incoming>
+      <bpmn:outgoing>B_Flow_2</bpmn:outgoing>
+    </bpmn:task>
+  </bpmn:process>
+  <bpmn:process id="Process_Controller" isExecutable="false">
+    <bpmn:task id="C_Create" name="POST /entries&#10;JSON → Entry &#10;create(entry)">
+      <bpmn:outgoing>C_Flow_0</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="C_Return" name="Entry → JSON&#10;HTTP 200 OK">
+      <bpmn:incoming>C_Flow_0</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="C_Flow_0" sourceRef="C_Create" targetRef="C_Return" />
+  </bpmn:process>
+  <bpmn:process id="Process_Service" isExecutable="false">
+    <bpmn:task id="S_Create" name="Java class call to write new entry into database">
+      <bpmn:outgoing>S_Flow_0</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="S_Return" name="Commit der Transaktion&#10;return entry">
+      <bpmn:incoming>S_Flow_0</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="S_Flow_0" sourceRef="S_Create" targetRef="S_Return" />
+  </bpmn:process>
+  <bpmn:process id="Process_DB" isExecutable="false">
+    <bpmn:task id="DB_Insert" name="SQL: write entry to database" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Pool_User_di" bpmnElement="Pool_User" isHorizontal="true">
+        <dc:Bounds x="160" y="60" width="2040" height="120" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="U_Start_di" bpmnElement="U_Start">
+        <dc:Bounds x="282" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="270" y="138" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="U_Submit_di" bpmnElement="U_Submit">
+        <dc:Bounds x="390" y="80" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="U_See_di" bpmnElement="U_See">
+        <dc:Bounds x="1890" y="80" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="U_End_di" bpmnElement="U_End">
+        <dc:Bounds x="2082" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2058" y="138" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="U_Flow_0_di" bpmnElement="U_Flow_0">
+        <di:waypoint x="318" y="120" />
+        <di:waypoint x="390" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="U_Flow_1_di" bpmnElement="U_Flow_1">
+        <di:waypoint x="510" y="120" />
+        <di:waypoint x="1890" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="U_Flow_2_di" bpmnElement="U_Flow_2">
+        <di:waypoint x="2010" y="120" />
+        <di:waypoint x="2082" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Pool_Browser_di" bpmnElement="Pool_Browser" isHorizontal="true">
+        <dc:Bounds x="160" y="250" width="2040" height="120" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="B_Start_di" bpmnElement="B_Start">
+        <dc:Bounds x="432" y="292" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="B_Render_di" bpmnElement="B_Render">
+        <dc:Bounds x="1740" y="270" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="B_End_di" bpmnElement="B_End">
+        <dc:Bounds x="1932" y="292" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="B_Fetch_di" bpmnElement="B_Fetch">
+        <dc:Bounds x="530" y="270" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="B_Flow_0_di" bpmnElement="B_Flow_0">
+        <di:waypoint x="468" y="310" />
+        <di:waypoint x="530" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="B_Flow_2_di" bpmnElement="B_Flow_2">
+        <di:waypoint x="650" y="310" />
+        <di:waypoint x="1740" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="B_Flow_3_di" bpmnElement="B_Flow_3">
+        <di:waypoint x="1860" y="310" />
+        <di:waypoint x="1932" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Pool_Controller_di" bpmnElement="Pool_Controller" isHorizontal="true">
+        <dc:Bounds x="160" y="440" width="2040" height="120" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="C_Create_di" bpmnElement="C_Create">
+        <dc:Bounds x="840" y="460" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="C_Return_di" bpmnElement="C_Return">
+        <dc:Bounds x="1590" y="460" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="C_Flow_0_di" bpmnElement="C_Flow_0">
+        <di:waypoint x="960" y="500" />
+        <di:waypoint x="1590" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Pool_Service_di" bpmnElement="Pool_Service" isHorizontal="true">
+        <dc:Bounds x="160" y="630" width="2040" height="120" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_Create_di" bpmnElement="S_Create">
+        <dc:Bounds x="990" y="650" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_Return_di" bpmnElement="S_Return">
+        <dc:Bounds x="1440" y="650" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="S_Flow_0_di" bpmnElement="S_Flow_0">
+        <di:waypoint x="1110" y="690" />
+        <di:waypoint x="1440" y="690" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Pool_DB_di" bpmnElement="Pool_DB" isHorizontal="true">
+        <dc:Bounds x="160" y="810" width="2040" height="120" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DB_Insert_di" bpmnElement="DB_Insert">
+        <dc:Bounds x="1215" y="830" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="M1_di" bpmnElement="M1">
+        <di:waypoint x="450" y="160" />
+        <di:waypoint x="450" y="292" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="483" y="219" width="51" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="M2_di" bpmnElement="M2">
+        <di:waypoint x="590" y="350" />
+        <di:waypoint x="590" y="405" />
+        <di:waypoint x="900" y="405" />
+        <di:waypoint x="900" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="696" y="375" width="63" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="M3_di" bpmnElement="M3">
+        <di:waypoint x="900" y="540" />
+        <di:waypoint x="900" y="595" />
+        <di:waypoint x="1050" y="595" />
+        <di:waypoint x="1050" y="650" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="908" y="579" width="111" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="M8_di" bpmnElement="M8">
+        <di:waypoint x="1500" y="650" />
+        <di:waypoint x="1500" y="595" />
+        <di:waypoint x="1650" y="595" />
+        <di:waypoint x="1650" y="540" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1508" y="579" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="M9_di" bpmnElement="M9">
+        <di:waypoint x="1650" y="460" />
+        <di:waypoint x="1650" y="405" />
+        <di:waypoint x="1800" y="405" />
+        <di:waypoint x="1800" y="350" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1658" y="375" width="142" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="M10_di" bpmnElement="M10">
+        <di:waypoint x="1800" y="270" />
+        <di:waypoint x="1800" y="215" />
+        <di:waypoint x="1950" y="215" />
+        <di:waypoint x="1950" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1808" y="199" width="130" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1dqp8pg_di" bpmnElement="Flow_1dqp8pg">
+        <di:waypoint x="1050" y="730" />
+        <di:waypoint x="1050" y="870" />
+        <di:waypoint x="1215" y="870" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ntt8xt_di" bpmnElement="Flow_1ntt8xt">
+        <di:waypoint x="1335" y="870" />
+        <di:waypoint x="1500" y="870" />
+        <di:waypoint x="1500" y="730" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

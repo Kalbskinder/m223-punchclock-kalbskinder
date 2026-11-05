@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_Anwendungsfall" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.22.0">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:documentation>UML-Anwendungsfalldiagramm der Punch-Clock-Applikation, abgebildet in BPMN: Pools = Akteure bzw. Systemgrenze, Tasks = Anwendungsfälle, Nachrichtenflüsse = Kommunikationsbeziehungen, Assoziation mit Anmerkung = «include».</bpmn:documentation>
+    <bpmn:participant id="Actor_Mitarbeiter" name="Akteur: Mitarbeiter/in" />
+    <bpmn:participant id="System_Punchclock" name="Systemgrenze: Punch Clock (Quarkus-Webapplikation)" processRef="Process_UseCases" />
+    <bpmn:participant id="Actor_Entwickler" name="Akteur: Entwickler/in (API-Client)" />
+    <bpmn:messageFlow id="Use_M_Anzeigen" name="nutzt" sourceRef="Actor_Mitarbeiter" targetRef="UC_Anzeigen" />
+    <bpmn:messageFlow id="Use_M_Erfassen" name="nutzt" sourceRef="Actor_Mitarbeiter" targetRef="UC_Erfassen" />
+    <bpmn:messageFlow id="Use_E_Anzeigen" name="GET /entries" sourceRef="Actor_Entwickler" targetRef="UC_Anzeigen" />
+    <bpmn:messageFlow id="Use_E_Erfassen" name="POST /entries" sourceRef="Actor_Entwickler" targetRef="UC_Erfassen" />
+    <bpmn:textAnnotation id="Note_UC2">
+      <bpmn:text>POST /entries
+neuer Eintrag in der Tabelle</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Note_UC2" associationDirection="None" sourceRef="Note_UC2" targetRef="UC_Erfassen" />
+    <bpmn:textAnnotation id="Note_Include">
+      <bpmn:text>«include»
+UC2 schliesst UC2.1 immer ein</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_IncludeNote" associationDirection="None" sourceRef="Note_Include" targetRef="UC_ZeitEingeben" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_UseCases" isExecutable="false">
+    <bpmn:task id="UC_Anzeigen" name="UC1: Zeiteinträge anzeigen" />
+    <bpmn:task id="UC_Erfassen" name="UC2: Zeiteintrag erfassen" />
+    <bpmn:task id="UC_ZeitEingeben" name="UC2.1: Check-in und Check-out (Datum + Zeit) eingeben" />
+    <bpmn:association id="Assoc_Include" associationDirection="One" sourceRef="UC_Erfassen" targetRef="UC_ZeitEingeben" />
+    <bpmn:textAnnotation id="Note_UC1">
+      <bpmn:text>GET /entries
+Liste beim Laden der Seite</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Note_UC1" associationDirection="None" sourceRef="Note_UC1" targetRef="UC_Anzeigen" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Actor_Mitarbeiter_di" bpmnElement="Actor_Mitarbeiter" isHorizontal="true">
+        <dc:Bounds x="160" y="60" width="760" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="System_Punchclock_di" bpmnElement="System_Punchclock" isHorizontal="true">
+        <dc:Bounds x="160" y="170" width="760" height="330" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UC_Anzeigen_di" bpmnElement="UC_Anzeigen">
+        <dc:Bounds x="250" y="210" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UC_Erfassen_di" bpmnElement="UC_Erfassen">
+        <dc:Bounds x="500" y="210" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UC_ZeitEingeben_di" bpmnElement="UC_ZeitEingeben">
+        <dc:Bounds x="500" y="380" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_UC1_di" bpmnElement="Note_UC1">
+        <dc:Bounds x="250" y="380" width="180" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Assoc_Include_di" bpmnElement="Assoc_Include">
+        <di:waypoint x="590" y="290" />
+        <di:waypoint x="590" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Note_UC1_di" bpmnElement="Assoc_Note_UC1">
+        <di:waypoint x="340" y="380" />
+        <di:waypoint x="340" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Actor_Entwickler_di" bpmnElement="Actor_Entwickler" isHorizontal="true">
+        <dc:Bounds x="160" y="550" width="760" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Assoc_IncludeNote_di" bpmnElement="Assoc_IncludeNote">
+        <di:waypoint x="720" y="310" />
+        <di:waypoint x="700" y="310" />
+        <di:waypoint x="700" y="420" />
+        <di:waypoint x="680" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Note_UC2_di" bpmnElement="Assoc_Note_UC2">
+        <di:waypoint x="720" y="250" />
+        <di:waypoint x="680" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Use_M_Anzeigen_di" bpmnElement="Use_M_Anzeigen">
+        <di:waypoint x="340" y="120" />
+        <di:waypoint x="340" y="210" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="354" y="155" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Use_M_Erfassen_di" bpmnElement="Use_M_Erfassen">
+        <di:waypoint x="590" y="120" />
+        <di:waypoint x="590" y="210" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="604" y="155" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Use_E_Anzeigen_di" bpmnElement="Use_E_Anzeigen">
+        <di:waypoint x="340" y="550" />
+        <di:waypoint x="340" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="350" y="514" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Use_E_Erfassen_di" bpmnElement="Use_E_Erfassen">
+        <di:waypoint x="590" y="550" />
+        <di:waypoint x="590" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="602" y="512" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Note_Include_di" bpmnElement="Note_Include">
+        <dc:Bounds x="720" y="290" width="190" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_UC2_di" bpmnElement="Note_UC2">
+        <dc:Bounds x="720" y="230" width="190" height="40" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
