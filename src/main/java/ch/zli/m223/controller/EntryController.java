@@ -3,6 +3,7 @@ package ch.zli.m223.controller;
 import java.util.List;
 
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -16,7 +17,7 @@ import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import ch.zli.m223.model.Entry;
+import ch.zli.m223.dto.EntryDto;
 import ch.zli.m223.service.EntryService;
 
 @Path("/entries")
@@ -29,7 +30,7 @@ public class EntryController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Index all Entries.", description = "Returns a list of all entries.")
-    public List<Entry> index() {
+    public List<EntryDto> index() {
         return entryService.findAll();
     }
 
@@ -37,8 +38,8 @@ public class EntryController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Creates a new entry.", description = "Creates a new entry and returns the newly added entry.")
-    public Entry create(Entry entry) {
-       return entryService.createEntry(entry);
+    public EntryDto create(@Valid EntryDto entry) {
+        return entryService.createEntry(entry);
     }
 
     @DELETE
@@ -53,7 +54,7 @@ public class EntryController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Updates an entry.", description = "Updates the entry with the given id and returns the updated entry.")
-    public Entry update(@PathParam("id") Long id, Entry entry) {
+    public EntryDto update(@PathParam("id") Long id, @Valid EntryDto entry) {
         return entryService.updateEntry(id, entry);
     }
 

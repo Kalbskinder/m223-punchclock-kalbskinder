@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import ch.zli.m223.dto.EntryDto;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -41,5 +43,13 @@ public class Entry {
 
   public void setCheckOut(LocalDateTime checkOut) {
     this.checkOut = checkOut;
+  }
+
+  public EntryDto toDto() {
+    var dto = new EntryDto();
+    dto.setId(this.id);
+    dto.setCheckIn(checkIn);
+    dto.setCheckOut(checkOut);
+    return dto;
   }
 }

@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
+import ch.zli.m223.dto.EntryDto;
 import ch.zli.m223.model.Entry;
 import ch.zli.m223.repository.EntryRepository;
 
@@ -16,9 +17,10 @@ public class EntryService {
     private EntryRepository entryRepository;
 
     @Transactional
-    public Entry createEntry(Entry entry) {
+    public EntryDto createEntry(EntryDto dto) {
+        Entry entry = dto.toEntity();
         entryRepository.persist(entry);
-        return entry;
+        return entry.toDto();
     }
 
     @Transactional
@@ -29,15 +31,17 @@ public class EntryService {
     }
 
     @Transactional
-    public Entry updateEntry(Long id, Entry entry) {
+    public EntryDto updateEntry(Long id, EntryDto dto) {
         Entry existing = entryRepository.findByIdOptional(id)
                 .orElseThrow(() -> new NotFoundException("Entry with id " + id + " not found."));
-        existing.setCheckIn(entry.getCheckIn());
-        existing.setCheckOut(entry.getCheckOut());
-        return existing;
+        existing.setCheckIn(dto.getCheckIn());
+        existing.setCheckOut(dto.getCheckOut());
+        return existing.toDto();
     }
 
-    public List<Entry> findAll() {
-        return entryRepository.listAll();
+    public List<EntryDto> findAll() {
+        return entryRepository.listAll().stream()
+                .map(Entry::toDto)
+                .toList();
     }
 }
