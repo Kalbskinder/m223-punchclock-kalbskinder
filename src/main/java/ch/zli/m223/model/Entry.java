@@ -2,17 +2,17 @@ package ch.zli.m223.model;
 
 import jakarta.persistence.*;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
+import ch.zli.m223.dto.EntryDetailDto;
 import ch.zli.m223.dto.EntryDto;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Entry {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Schema(readOnly = true)
   private Long id;
 
   @Column(nullable = false)
@@ -20,6 +20,17 @@ public class Entry {
 
   @Column(nullable = false)
   private LocalDateTime checkOut;
+
+  @ManyToOne
+  @JoinColumn(name = "category_id")
+  private Category category;
+
+  @ManyToMany
+  @JoinTable(
+      name = "entry_tag",
+      joinColumns = @JoinColumn(name = "entry_id"),
+      inverseJoinColumns = @JoinColumn(name = "tag_id"))
+  private Set<Tag> tags = new HashSet<>();
 
   public Long getId() {
     return id;
@@ -45,11 +56,42 @@ public class Entry {
     this.checkOut = checkOut;
   }
 
+  public Category getCategory() {
+    return category;
+  }
+
+  public void setCategory(Category category) {
+    this.category = category;
+  }
+
+  public Set<Tag> getTags() {
+    return tags;
+  }
+
+  public void setTags(Set<Tag> tags) {
+    this.tags = tags;
+  }
+
   public EntryDto toDto() {
     var dto = new EntryDto();
-    dto.setId(this.id);
+    dto.setId(id);
     dto.setCheckIn(checkIn);
     dto.setCheckOut(checkOut);
+    dto.setCategoryId(category != null ? category.getId() : null);
+    dto.setTagIds(tags.stream().map(Tag::getId).sorted().toList());
+    return dto;
+  }
+
+  public EntryDetailDto toDetailDto() {
+    var dto = new EntryDetailDto();
+    dto.setId(id);
+    dto.setCheckIn(checkIn);
+    dto.setCheckOut(checkOut);
+    dto.setCategory(category != null ? category.toDto() : null);
+    dto.setTags(tags.stream()
+        .sorted((a, b) -> a.getId().compareTo(b.getId()))
+        .map(Tag::toDto)
+        .toList());
     return dto;
   }
 }
