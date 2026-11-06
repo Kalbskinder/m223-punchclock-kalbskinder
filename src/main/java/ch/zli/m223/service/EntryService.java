@@ -1,7 +1,9 @@
 package ch.zli.m223.service;
 
 import java.util.HashSet;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -25,6 +27,9 @@ public class EntryService {
 
     @Inject
     TagService tagService;
+
+    @Inject
+    TimeSummaryService timeSummaryService;
 
     public List<EntryDto> findAll() {
         return entryRepository.listAll().stream()
@@ -64,6 +69,11 @@ public class EntryService {
         if (!entryRepository.deleteById(id)) {
             throw new NotFoundException("Entry with id " + id + " not found.");
         }
+    }
+
+    public Map<LocalDate, String> getTimeSummaries() {
+        List<Entry> entries = entryRepository.listAll();
+        return timeSummaryService.calculateSummaryPerDay(entries);
     }
 
     /** Loads category and tags by their IDs; unknown IDs result in a 404. */
