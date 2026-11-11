@@ -2,6 +2,7 @@ package ch.zli.m223.controller;
 
 import java.util.List;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -18,10 +19,12 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import ch.zli.m223.dto.EntryDto;
+import ch.zli.m223.security.Roles;
 import ch.zli.m223.service.EntryService;
 
 @Path("/entries")
 @Tag(name = "Entries", description = "Handling of entries")
+@RolesAllowed({ Roles.USER, Roles.ADMIN })
 public class EntryController {
 
     @Inject

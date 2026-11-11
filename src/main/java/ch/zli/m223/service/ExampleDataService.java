@@ -11,9 +11,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import ch.zli.m223.model.Category;
 import ch.zli.m223.model.Entry;
 import ch.zli.m223.model.Tag;
+import ch.zli.m223.repository.ApplicationUserRepository;
 import ch.zli.m223.repository.CategoryRepository;
 import ch.zli.m223.repository.EntryRepository;
 import ch.zli.m223.repository.TagRepository;
+import ch.zli.m223.security.Roles;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,6 +28,8 @@ public class ExampleDataService {
     @Inject CategoryRepository categoryRepository;
     @Inject TagRepository tagRepository;
     @Inject EntryRepository entryRepository;
+    @Inject ApplicationUserRepository userRepository;
+    @Inject AuthService authService;
 
     @ConfigProperty(name = "punchclock.example-data.enabled",
         defaultValue = "false")
@@ -39,6 +43,12 @@ public class ExampleDataService {
 
     @Transactional
     public void createExampleData() {
+        if (userRepository.count() == 0) {
+            authService.createUser("admin@punchclock.ch", "admin1234", Roles.ADMIN);
+            authService.createUser("user@punchclock.ch", "user1234", Roles.USER);
+            Log.info("Example users created: admin@punchclock.ch / admin1234, user@punchclock.ch / user1234");
+        }
+
         if (categoryRepository.count() > 0
             || tagRepository.count() > 0
             || entryRepository.count() > 0

@@ -2,6 +2,7 @@ package ch.zli.m223.controller;
 
 import java.util.List;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -18,10 +19,12 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import ch.zli.m223.dto.TagDto;
+import ch.zli.m223.security.Roles;
 import ch.zli.m223.service.TagService;
 
 @Path("/tags")
 @Tag(name = "Tags", description = "Handling of tags")
+@RolesAllowed({ Roles.USER, Roles.ADMIN })
 public class TagController {
 
     @Inject
@@ -43,6 +46,7 @@ public class TagController {
     }
 
     @POST
+    @RolesAllowed(Roles.ADMIN)
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Creates a new tag.", description = "Creates a new tag and returns it.")
@@ -51,6 +55,7 @@ public class TagController {
     }
 
     @PUT
+    @RolesAllowed(Roles.ADMIN)
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -60,6 +65,7 @@ public class TagController {
     }
 
     @DELETE
+    @RolesAllowed(Roles.ADMIN)
     @Path("/{id}")
     @Operation(summary = "Deletes a tag.", description = "Deletes the tag with the given id.")
     public void delete(@PathParam("id") Long id) {

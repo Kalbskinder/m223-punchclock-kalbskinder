@@ -1,6 +1,7 @@
 package ch.zli.m223;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -10,6 +11,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 
 @QuarkusTest
+@TestSecurity(user = "test@punchclock.ch", roles = "Admin")
 public class CategoryTagResourceTest {
 
     private Long post(String path, String json) {
