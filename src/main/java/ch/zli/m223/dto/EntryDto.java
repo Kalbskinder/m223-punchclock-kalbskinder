@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -19,6 +20,9 @@ public class EntryDto {
 
   @NotNull
   private LocalDateTime checkOut;
+
+  @Size(max = 255)
+  private String description;
 
   private Long categoryId;
 
@@ -48,6 +52,14 @@ public class EntryDto {
     this.checkOut = checkOut;
   }
 
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   public Long getCategoryId() {
     return categoryId;
   }
@@ -72,6 +84,7 @@ public class EntryDto {
     var entry = new Entry();
     entry.setCheckIn(checkIn);
     entry.setCheckOut(checkOut);
+    entry.setDescription(description);
     return entry;
   }
 }

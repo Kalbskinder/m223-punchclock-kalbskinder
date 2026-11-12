@@ -21,6 +21,9 @@ public class Entry {
   @Column(nullable = false)
   private LocalDateTime checkOut;
 
+  @Column 
+  private String description;
+
   @ManyToOne
   @JoinColumn(name = "category_id")
   private Category category;
@@ -72,11 +75,20 @@ public class Entry {
     this.tags = tags;
   }
 
+  public void setDescription(String desc) {
+    this.description = desc;
+  }
+
+  public String getDescription() {
+    return this.description;
+  }
+
   public EntryDto toDto() {
     var dto = new EntryDto();
     dto.setId(id);
     dto.setCheckIn(checkIn);
     dto.setCheckOut(checkOut);
+    dto.setDescription(description);
     dto.setCategoryId(category != null ? category.getId() : null);
     dto.setTagIds(tags.stream().map(Tag::getId).sorted().toList());
     return dto;

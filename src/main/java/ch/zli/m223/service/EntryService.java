@@ -60,6 +60,7 @@ public class EntryService {
         Entry entry = getEntry(id);
         entry.setCheckIn(dto.getCheckIn());
         entry.setCheckOut(dto.getCheckOut());
+        entry.setDescription(dto.getDescription());
         applyRelations(entry, dto);
         return entry.toDto();
     }

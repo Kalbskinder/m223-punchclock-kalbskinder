@@ -40,9 +40,11 @@ public class CategoryTagResourceTest {
         // Entry with relations
         Long entryId = given().contentType("application/json")
             .body("{\"checkIn\":\"2026-11-05T08:00:00\",\"checkOut\":\"2026-11-05T12:00:00\","
+                + "\"description\":\"API umgesetzt\","
                 + "\"categoryId\":" + categoryId + ",\"tagIds\":[" + tag2 + "," + tag1 + "]}")
             .when().post("/entries")
             .then().statusCode(200)
+            .body("description", is("API umgesetzt"))
             .body("categoryId", is(categoryId.intValue()))
             .body("tagIds", contains(tag1.intValue(), tag2.intValue()))
             .extract().jsonPath().getLong("id");
